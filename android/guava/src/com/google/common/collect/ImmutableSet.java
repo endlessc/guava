@@ -112,8 +112,7 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
   @SafeVarargs // For Eclipse. For internal javac we have disabled this pointless type of warning.
   public static <E> ImmutableSet<E> of(E e1, E e2, E e3, E e4, E e5, E e6, E... others) {
     checkArgument(
-        others.length <= Integer.MAX_VALUE - 6,
-        "the total number of elements must fit in an int");
+        others.length <= Integer.MAX_VALUE - 6, "the total number of elements must fit in an int");
     final int paramCount = 6;
     Object[] elements = new Object[paramCount + others.length];
     elements[0] = e1;
@@ -338,7 +337,7 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
   @Override
   public abstract UnmodifiableIterator<E> iterator();
 
-  @LazyInit @NullableDecl @RetainedWith private transient ImmutableList<E> asList;
+  @LazyInit @RetainedWith @NullableDecl private transient ImmutableList<E> asList;
 
   @Override
   public ImmutableList<E> asList() {

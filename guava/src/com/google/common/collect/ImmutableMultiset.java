@@ -18,7 +18,6 @@ package com.google.common.collect;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.annotations.Beta;
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.annotations.VisibleForTesting;
@@ -34,8 +33,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collector;
-import org.checkerframework.checker.nullness.compatqual.MonotonicNonNullDecl;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A {@link Multiset} whose contents will never change, with many other important properties
@@ -64,7 +62,6 @@ public abstract class ImmutableMultiset<E> extends ImmutableMultisetGwtSerializa
    *
    * @since 21.0
    */
-  @Beta
   public static <E> Collector<E, ?, ImmutableMultiset<E>> toImmutableMultiset() {
     return toImmutableMultiset(Function.identity(), e -> 1);
   }
@@ -239,7 +236,7 @@ public abstract class ImmutableMultiset<E> extends ImmutableMultisetGwtSerializa
     final Iterator<Entry<E>> entryIterator = entrySet().iterator();
     return new UnmodifiableIterator<E>() {
       int remaining;
-      @MonotonicNonNullDecl E element;
+      @Nullable E element;
 
       @Override
       public boolean hasNext() {
@@ -268,7 +265,7 @@ public abstract class ImmutableMultiset<E> extends ImmutableMultisetGwtSerializa
   }
 
   @Override
-  public boolean contains(@NullableDecl Object object) {
+  public boolean contains(@Nullable Object object) {
     return count(object) > 0;
   }
 
@@ -335,7 +332,7 @@ public abstract class ImmutableMultiset<E> extends ImmutableMultisetGwtSerializa
   }
 
   @Override
-  public boolean equals(@NullableDecl Object object) {
+  public boolean equals(@Nullable Object object) {
     return Multisets.equalsImpl(this, object);
   }
 
@@ -584,9 +581,9 @@ public abstract class ImmutableMultiset<E> extends ImmutableMultisetGwtSerializa
     }
   }
 
-  @WeakOuter
   static final class ElementSet<E> extends ImmutableSet.Indexed<E> {
     private final List<Entry<E>> entries;
+    // TODO(cpovirk): @Weak?
     private final Multiset<E> delegate;
 
     ElementSet(List<Entry<E>> entries, Multiset<E> delegate) {
@@ -600,7 +597,7 @@ public abstract class ImmutableMultiset<E> extends ImmutableMultisetGwtSerializa
     }
 
     @Override
-    public boolean contains(@NullableDecl Object object) {
+    public boolean contains(@Nullable Object object) {
       return delegate.contains(object);
     }
 

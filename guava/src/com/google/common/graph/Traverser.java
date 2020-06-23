@@ -30,7 +30,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * An object that can traverse the nodes that are reachable from a specified (set of) start node(s)
@@ -41,9 +41,8 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
  * based on your answers to the following questions:
  *
  * <ol>
- *   <li>Is there only one path to any node that's reachable from any start node? (If so, the
- *       graph to be traversed is a tree or forest even if it is a subgraph of a graph which is
- *       neither.)
+ *   <li>Is there only one path to any node that's reachable from any start node? (If so, the graph
+ *       to be traversed is a tree or forest even if it is a subgraph of a graph which is neither.)
  *   <li>Are the node objects' implementations of {@code equals()}/{@code hashCode()} <a
  *       href="https://github.com/google/guava/wiki/GraphsExplained#non-recursiveness">recursive</a>?
  * </ol>
@@ -471,10 +470,10 @@ public abstract class Traverser<N> {
 
       /** A simple tuple of a node and a partially iterated {@link Iterator} of its successors. */
       private final class NodeAndSuccessors {
-        @NullableDecl final N node;
+        final @Nullable N node;
         final Iterator<? extends N> successorIterator;
 
-        NodeAndSuccessors(@NullableDecl N node, Iterable<? extends N> successors) {
+        NodeAndSuccessors(@Nullable N node, Iterable<? extends N> successors) {
           this.node = node;
           this.successorIterator = successors.iterator();
         }
@@ -644,10 +643,10 @@ public abstract class Traverser<N> {
 
       /** A simple tuple of a node and a partially iterated {@link Iterator} of its children. */
       private final class NodeAndChildren {
-        @NullableDecl final N node;
+        final @Nullable N node;
         final Iterator<? extends N> childIterator;
 
-        NodeAndChildren(@NullableDecl N node, Iterable<? extends N> children) {
+        NodeAndChildren(@Nullable N node, Iterable<? extends N> children) {
           this.node = node;
           this.childIterator = children.iterator();
         }

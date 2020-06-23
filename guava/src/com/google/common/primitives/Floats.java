@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.RandomAccess;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Static utility methods pertaining to {@code float} primitives, that are not already found in
@@ -46,7 +46,7 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
  * @since 1.0
  */
 @GwtCompatible(emulated = true)
-public final class Floats {
+public final class Floats extends FloatsMethodsForWeb {
   private Floats() {}
 
   /**
@@ -204,6 +204,8 @@ public final class Floats {
    *     the array
    * @throws IllegalArgumentException if {@code array} is empty
    */
+  @GwtIncompatible(
+      "Available in GWT! Annotation is to avoid conflict with GWT specialization of base class.")
   public static float min(float... array) {
     checkArgument(array.length > 0);
     float min = array[0];
@@ -222,6 +224,8 @@ public final class Floats {
    *     in the array
    * @throws IllegalArgumentException if {@code array} is empty
    */
+  @GwtIncompatible(
+      "Available in GWT! Annotation is to avoid conflict with GWT specialization of base class.")
   public static float max(float... array) {
     checkArgument(array.length > 0);
     float max = array[0];
@@ -586,7 +590,7 @@ public final class Floats {
     }
 
     @Override
-    public boolean equals(@NullableDecl Object object) {
+    public boolean equals(@Nullable Object object) {
       if (object == this) {
         return true;
       }
@@ -646,12 +650,12 @@ public final class Floats {
    * @param string the string representation of a {@code float} value
    * @return the floating point value represented by {@code string}, or {@code null} if {@code
    *     string} has a length of zero or cannot be parsed as a {@code float} value
+   * @throws NullPointerException if {@code string} is {@code null}
    * @since 14.0
    */
   @Beta
-  @NullableDecl
   @GwtIncompatible // regular expressions
-  public static Float tryParse(String string) {
+  public static @Nullable Float tryParse(String string) {
     if (Doubles.FLOATING_POINT_PATTERN.matcher(string).matches()) {
       // TODO(lowasser): could be potentially optimized, but only with
       // extensive testing

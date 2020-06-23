@@ -54,7 +54,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Logger;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Scans the source of a {@link ClassLoader} and finds all loadable classes and resources.
@@ -296,7 +296,7 @@ public final class ClassPath {
         String innerClassName = className.substring(lastDollarSign + 1);
         // local and anonymous classes are prefixed with number (1,2,3...), anonymous classes are
         // entirely numeric whereas local classes have the user supplied name as a suffix
-        return CharMatcher.digit().trimLeadingFrom(innerClassName);
+        return CharMatcher.inRange('0', '9').trimLeadingFrom(innerClassName);
       }
       String packageName = getPackageName();
       if (packageName.isEmpty()) {
@@ -414,8 +414,7 @@ public final class ClassPath {
      * and an empty set will be returned.
      */
     @VisibleForTesting
-    static ImmutableSet<File> getClassPathFromManifest(
-        File jarFile, @NullableDecl Manifest manifest) {
+    static ImmutableSet<File> getClassPathFromManifest(File jarFile, @Nullable Manifest manifest) {
       if (manifest == null) {
         return ImmutableSet.of();
       }

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collector;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * GWT emulation of {@link com.google.common.collect.ImmutableSortedSet}.
@@ -270,7 +270,7 @@ public abstract class ImmutableSortedSet<E> extends ForwardingImmutableSet<E>
   }
 
   @Override
-  public boolean contains(@NullableDecl Object object) {
+  public boolean contains(@Nullable Object object) {
     try {
       // This set never contains null.  We need to explicitly check here
       // because some comparator might throw NPE (e.g. the natural ordering).
@@ -321,7 +321,17 @@ public abstract class ImmutableSortedSet<E> extends ForwardingImmutableSet<E>
     return null;
   }
 
-  ImmutableSortedSet<E> headSet(E toElement, boolean inclusive) {
+  public E ceiling(E e) {
+    ImmutableSortedSet<E> set = tailSet(e, true);
+    return !set.isEmpty() ? set.first() : null;
+  }
+
+  public E floor(E e) {
+    ImmutableSortedSet<E> set = headSet(e, true);
+    return !set.isEmpty() ? set.last() : null;
+  }
+
+  public ImmutableSortedSet<E> headSet(E toElement, boolean inclusive) {
     checkNotNull(toElement);
     if (inclusive) {
       E tmp = higher(toElement);
@@ -362,7 +372,7 @@ public abstract class ImmutableSortedSet<E> extends ForwardingImmutableSet<E>
     }
   }
 
-  ImmutableSortedSet<E> tailSet(E fromElement, boolean inclusive) {
+  public ImmutableSortedSet<E> tailSet(E fromElement, boolean inclusive) {
     checkNotNull(fromElement);
     if (!inclusive) {
       E tmp = higher(fromElement);
