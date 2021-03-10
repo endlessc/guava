@@ -77,19 +77,19 @@ public final class CharStreams {
       } else {
         return copyReaderToWriter((Reader) from, asWriter(to));
       }
-    } else {
-      checkNotNull(from);
-      checkNotNull(to);
-      long total = 0;
-      CharBuffer buf = createBuffer();
-      while (from.read(buf) != -1) {
-        buf.flip();
-        to.append(buf);
-        total += buf.remaining();
-        buf.clear();
-      }
-      return total;
     }
+
+    checkNotNull(from);
+    checkNotNull(to);
+    long total = 0;
+    CharBuffer buf = createBuffer();
+    while (from.read(buf) != -1) {
+      Java8Compatibility.flip(buf);
+      to.append(buf);
+      total += buf.remaining();
+      Java8Compatibility.clear(buf);
+    }
+    return total;
   }
 
   // TODO(lukes): consider allowing callers to pass in a buffer to use, some callers would be able
@@ -243,7 +243,7 @@ public final class CharStreams {
     CharBuffer buf = createBuffer();
     while ((read = readable.read(buf)) != -1) {
       total += read;
-      buf.clear();
+      Java8Compatibility.clear(buf);
     }
     return total;
   }

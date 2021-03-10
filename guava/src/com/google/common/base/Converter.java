@@ -55,7 +55,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * behavior for all converters; implementations of {@link #doForward} and {@link #doBackward} are
  * guaranteed to never be passed {@code null}, and must never return {@code null}.
  *
- *
  * <h3>Common ways to use</h3>
  *
  * <p>Getting a converter:
@@ -118,7 +117,7 @@ public abstract class Converter<A, B> implements Function<A, B> {
   private final boolean handleNullAutomatically;
 
   // We lazily cache the reverse view to avoid allocating on every call to reverse().
-  @LazyInit private transient @Nullable Converter<B, A> reverse;
+  @LazyInit @RetainedWith private transient @Nullable Converter<B, A> reverse;
 
   /** Constructor for use by subclasses. */
   protected Converter() {
@@ -241,7 +240,7 @@ public abstract class Converter<A, B> implements Function<A, B> {
 
   private static final class ReverseConverter<A, B> extends Converter<B, A>
       implements Serializable {
-    @RetainedWith final Converter<A, B> original;
+    final Converter<A, B> original;
 
     ReverseConverter(Converter<A, B> original) {
       this.original = original;

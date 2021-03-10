@@ -1005,8 +1005,29 @@ public final class LongMath {
       checkNonNegative("n", n);
       return false;
     }
-    if (n == 2 || n == 3 || n == 5 || n == 7 || n == 11 || n == 13) {
-      return true;
+    if (n < 66) {
+      // Encode all primes less than 66 into mask without 0 and 1.
+      long mask =
+          (1L << (2 - 2))
+              | (1L << (3 - 2))
+              | (1L << (5 - 2))
+              | (1L << (7 - 2))
+              | (1L << (11 - 2))
+              | (1L << (13 - 2))
+              | (1L << (17 - 2))
+              | (1L << (19 - 2))
+              | (1L << (23 - 2))
+              | (1L << (29 - 2))
+              | (1L << (31 - 2))
+              | (1L << (37 - 2))
+              | (1L << (41 - 2))
+              | (1L << (43 - 2))
+              | (1L << (47 - 2))
+              | (1L << (53 - 2))
+              | (1L << (59 - 2))
+              | (1L << (61 - 2));
+      // Look up n within the mask.
+      return ((mask >> ((int) n - 2)) & 1) != 0;
     }
 
     if ((SIEVE_30 & (1 << (n % 30))) != 0) {
@@ -1070,10 +1091,10 @@ public final class LongMath {
       @Override
       long mulMod(long a, long b, long m) {
         /*
-         * NOTE(lowasser, 2015-Feb-12): Benchmarks suggest that changing this to
-         * UnsignedLongs.remainder and increasing the threshold to 2^32 doesn't pay for itself, and
-         * adding another enum constant hurts performance further -- I suspect because bimorphic
-         * implementation is a sweet spot for the JVM.
+         * lowasser, 2015-Feb-12: Benchmarks suggest that changing this to UnsignedLongs.remainder
+         * and increasing the threshold to 2^32 doesn't pay for itself, and adding another enum
+         * constant hurts performance further -- I suspect because bimorphic implementation is a
+         * sweet spot for the JVM.
          */
         return (a * b) % m;
       }
@@ -1218,15 +1239,32 @@ public final class LongMath {
    *
    * @throws ArithmeticException if {@code mode} is {@link RoundingMode#UNNECESSARY} and {@code x}
    *     is not precisely representable as a {@code double}
-   * @since NEXT
+   * @since 30.0
    */
   @SuppressWarnings("deprecation")
   @GwtIncompatible
   public static double roundToDouble(long x, RoundingMode mode) {
-    // Logic copied from ToDoubleRounder.  The repeated logic isn't ideal, but this doesn't box.
+    // Logic adapted from ToDoubleRounder.
     double roundArbitrarily = (double) x;
     long roundArbitrarilyAsLong = (long) roundArbitrarily;
-    int cmpXToRoundArbitrarily = Longs.compare(x, roundArbitrarilyAsLong);
+    int cmpXToRoundArbitrarily;
+
+    if (roundArbitrarilyAsLong == Long.MAX_VALUE) {
+      /*
+       * For most values, the conversion from roundArbitrarily to roundArbitrarilyAsLong is
+       * lossless. In that case we can compare x to roundArbitrarily using Longs.compare(x,
+       * roundArbitrarilyAsLong). The exception is for values where the conversion to double rounds
+       * up to give roundArbitrarily equal to 2^63, so the conversion back to long overflows and
+       * roundArbitrarilyAsLong is Long.MAX_VALUE. (This is the only way this condition can occur as
+       * otherwise the conversion back to long pads with zero bits.) In this case we know that
+       * roundArbitrarily > x. (This is important when x == Long.MAX_VALUE ==
+       * roundArbitrarilyAsLong.)
+       */
+      cmpXToRoundArbitrarily = -1;
+    } else {
+      cmpXToRoundArbitrarily = Longs.compare(x, roundArbitrarilyAsLong);
+    }
+
     switch (mode) {
       case UNNECESSARY:
         checkRoundingUnnecessary(cmpXToRoundArbitrarily == 0);
@@ -1276,6 +1314,13 @@ public final class LongMath {
 
           long deltaToFloor = x - roundFloor;
           long deltaToCeiling = roundCeiling - x;
+
+          if (roundCeiling == Long.MAX_VALUE) {
+            // correct for Long.MAX_VALUE as discussed above: roundCeilingAsDouble must be 2^63, but
+            // roundCeiling is 2^63-1.
+            deltaToCeiling++;
+          }
+
           int diff = Longs.compare(deltaToFloor, deltaToCeiling);
           if (diff < 0) { // closer to floor
             return roundFloorAsDouble;

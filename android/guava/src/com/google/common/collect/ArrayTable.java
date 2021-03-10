@@ -26,6 +26,7 @@ import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps.IteratorBasedAbstractMap;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.DoNotCall;
 import com.google.j2objc.annotations.WeakOuter;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -140,7 +141,7 @@ public final class ArrayTable<R, C, V> extends AbstractTable<R, C, V> implements
      * TODO(jlevy): Support only one of rowKey / columnKey being empty? If we
      * do, when columnKeys is empty but rowKeys isn't, rowKeyList() can contain
      * elements but rowKeySet() will be empty and containsRow() won't
-     * acknolwedge them.
+     * acknowledge them.
      */
     rowKeyToIndex = Maps.indexMap(rowList);
     columnKeyToIndex = Maps.indexMap(columnList);
@@ -355,6 +356,7 @@ public final class ArrayTable<R, C, V> extends AbstractTable<R, C, V> implements
    * @throws UnsupportedOperationException always
    * @deprecated Use {@link #eraseAll}
    */
+  @DoNotCall("Always throws UnsupportedOperationException")
   @Override
   @Deprecated
   public void clear() {
@@ -466,6 +468,7 @@ public final class ArrayTable<R, C, V> extends AbstractTable<R, C, V> implements
    * @throws UnsupportedOperationException always
    * @deprecated Use {@link #erase}
    */
+  @DoNotCall("Always throws UnsupportedOperationException")
   @CanIgnoreReturnValue
   @Override
   @Deprecated
